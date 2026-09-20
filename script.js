@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSmoothScroll();
     initActiveNavHighlight();
     initQuoteModal();
+    initBusinessCard();
 });
 
 // ===== Navbar Scroll Effect =====
@@ -510,3 +511,62 @@ function resetForm() {
 
 // Make openQuoteModal available globally (called from onclick in HTML)
 window.openQuoteModal = openQuoteModal;
+
+// ===== Digital Business Card & Lightbox Interactivity =====
+function initBusinessCard() {
+    const cardPreview = document.getElementById('bizCardPreview');
+    const cardLightbox = document.getElementById('cardLightbox');
+    const lightboxClose = document.getElementById('lightboxClose');
+    const vcardBtn = document.getElementById('downloadVCardBtn');
+
+    if (cardPreview && cardLightbox) {
+        cardPreview.addEventListener('click', () => {
+            cardLightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        });
+
+        const closeLightbox = () => {
+            cardLightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        };
+
+        if (lightboxClose) {
+            lightboxClose.addEventListener('click', closeLightbox);
+        }
+
+        cardLightbox.addEventListener('click', (e) => {
+            if (e.target === cardLightbox) {
+                closeLightbox();
+            }
+        });
+    }
+
+    if (vcardBtn) {
+        vcardBtn.addEventListener('click', () => {
+            const vcardData = [
+                'BEGIN:VCARD',
+                'VERSION:3.0',
+                'FN:VEERABADRAN V',
+                'N:VEERABADRAN;V;;;',
+                'ORG:ePointSolutions',
+                'TITLE:Founder & Technology Partner',
+                'TEL;TYPE=CELL,VOICE:+919080133317',
+                'EMAIL;TYPE=PREF,INTERNET:epointsolutions001@gmail.com',
+                'ADR;TYPE=WORK:;;Double Road;Chamarajanagar;;571313;India',
+                'NOTE:Your Complete Technology Partner in Chamarajanagar - Computer Sales\\, Service\\, Software Development\\, Printer & Xerox Machine Repairs.',
+                'END:VCARD'
+            ].join('\n');
+
+            const blob = new Blob([vcardData], { type: 'text/vcard;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Veerabadran_ePointSolutions.vcf');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        });
+    }
+}
+
